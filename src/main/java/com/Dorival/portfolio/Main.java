@@ -3,32 +3,25 @@ package com.Dorival.portfolio;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.time.LocalDate;
-import java.time.Period;
-
+import java.sql.Date;
 
 public class Main {
     public static void main(String[] args) {
-        try (
-             //Abrir conexão com o BD em Mémoria
-             Connection conn = DatabaseConnection.getConnection();
-             //Abrir o Statement
+        try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            // Criar tabela Cliente
+            // Criar tabelas
             stmt.execute("CREATE TABLE Cliente (" +
                     "id_cliente INT AUTO_INCREMENT PRIMARY KEY," +
                     "nome VARCHAR(100) NOT NULL," +
                     "email VARCHAR(100) NOT NULL," +
                     "data_nascimento DATE)");
 
-            // Criar tabela Produto
             stmt.execute("CREATE TABLE Produto (" +
                     "id_produto INT AUTO_INCREMENT PRIMARY KEY," +
                     "nome VARCHAR(100) NOT NULL," +
                     "preco DECIMAL(10,2) NOT NULL)");
 
-            // Criar tabela Pedido
             stmt.execute("CREATE TABLE Pedido (" +
                     "id_pedido INT AUTO_INCREMENT PRIMARY KEY," +
                     "id_cliente INT," +
@@ -38,45 +31,26 @@ public class Main {
                     "FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente)," +
                     "FOREIGN KEY (id_produto) REFERENCES Produto(id_produto))");
 
-            // Inserir Clientes
-            stmt.execute("INSERT INTO Cliente (nome, email, data_nascimento) VALUES" +
-                    "('Ana Souza', 'ana@email.com', '1990-05-10')," +
-                    "('Carlos Lima', 'carlos@email.com', '1985-09-22')," +
-                    "('Fernanda Torres', 'fernanda@email.com', '1995-12-01')");
+            // Popular banco
+            PopularBanco.popular(conn);
 
-            // Inserir Produtos
-            stmt.execute("INSERT INTO Produto (nome, preco) VALUES" +
-                    "('Notebook', 3500.00)," +
-                    "('Smartphone', 2200.00)," +
-                    "('Fone de Ouvido', 150.00)");
+            // Consultas
+            String sql = "SELECT c.nome AS cliente, p.nome AS produto, ped.quantidade, ped.data_pedido " +
+                    "FROM Pedido ped " +
+                    "INNER JOIN Cliente c ON ped.id_cliente = c.id_cliente " +
+                    "INNER JOIN Produto p ON ped.id_produto = p.id_produto";
 
-            // Inserir Pedidos
-            stmt.execute("INSERT INTO Pedido (id_cliente, id_produto, quantidade, data_pedido) VALUES" +
-                    "(1, 1, 1, '2023-01-15')," + // Ana comprou 1 Notebook
-                    "(2, 2, 2, '2023-02-10')," + // Carlos comprou 2 Smartphones
-                    "(3, 3, 3, '2023-03-05')");  // Fernanda comprou 3 Fones
-
-            System.out.println("Banco em memória criado e populado com dados!");
-
-            String sql = "SELECT nome, data_nascimento\n" +
-                    "FROM Cliente\n" +
-                    "WHERE (YEAR(CURRENT_DATE) - YEAR(data_nascimento)) > 20\n" +
-                    "ORDER BY data_nascimento ASC;\n";
             ResultSet rs = stmt.executeQuery(sql);
 
-
-
             while (rs.next()) {
-                String nome = rs.getString("nome");
-                LocalDate nascimento = rs.getDate("data_nascimento").toLocalDate();
-                int idadeAtual = Period.between(nascimento, LocalDate.now()).getYears();
+                String cliente = rs.getString("cliente");
+                String produto = rs.getString("produto");
+                int quantidade = rs.getInt("quantidade");
+                Date dataPedido = rs.getDate("data_pedido");
 
-
-                System.out.println("Nome: " + nome + " | Data de nascimento: " + nascimento + " | Idade: " + idadeAtual);
-
+                System.out.printf("Cliente: %s | Produto: %s | Quantidade: %d | Data: %s%n",
+                        cliente, produto, quantidade, dataPedido);
             }
-
-
 
         } catch (Exception e) {
             e.printStackTrace();
