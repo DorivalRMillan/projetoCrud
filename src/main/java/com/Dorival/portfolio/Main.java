@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Date;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -40,17 +41,41 @@ public class Main {
                     "INNER JOIN Cliente c ON ped.id_cliente = c.id_cliente " +
                     "INNER JOIN Produto p ON ped.id_produto = p.id_produto";
 
-            ResultSet rs = stmt.executeQuery(sql);
+            Scanner sc = new Scanner(System.in);
+            int escolha;
 
-            while (rs.next()) {
-                String cliente = rs.getString("cliente");
-                String produto = rs.getString("produto");
-                int quantidade = rs.getInt("quantidade");
-                Date dataPedido = rs.getDate("data_pedido");
+            do {
+                System.out.println("\n=== PORTFÓLIO JAVA ===");
+                System.out.println("1 - Cliente com pedidos acima de 2 unidades1");
+                System.out.println("2 - Descobrir qual produto foi mais vendido! ");
+                System.out.println("3 - ");
+                System.out.println("4 - Sair");
+                System.out.print("Escolha uma opção: ");
 
-                System.out.printf("Cliente: %s | Produto: %s | Quantidade: %d | Data: %s%n",
-                        cliente, produto, quantidade, dataPedido);
-            }
+                if (sc.hasNextInt()) {
+                    escolha = sc.nextInt();
+                } else {
+                    System.out.println("⚠ Opção inválida!");
+                    sc.next();
+                    escolha = 0;
+                }
+
+                switch (escolha) {
+                    case 1:
+                        Exercicio.executar1(conn);
+                        break;
+                    case 2:
+                        Exercicio.executar2(conn);
+                        break;
+                    case 4:
+                        System.out.println("Saindo do portfólio...");
+                        break;
+                    default:
+                        if (escolha != 0) System.out.println("⚠ Opção inválida! Tente novamente.");
+                }
+            } while (escolha != 4);
+
+            sc.close();
 
         } catch (Exception e) {
             e.printStackTrace();
