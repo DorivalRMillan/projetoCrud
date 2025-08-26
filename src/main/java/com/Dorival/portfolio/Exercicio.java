@@ -56,4 +56,36 @@ public class Exercicio {
             e.printStackTrace();
         }
     }
+
+
+public static void executar3(Connection conn) {
+    try (Statement stmt = conn.createStatement()) {
+        String sql = "SELECT c.nome as nomeCliente ," +
+                "SUM(ped.quantidade * prod.preco) AS totalGasto " +
+                "FROM Produto prod " +
+                "INNER JOIN Pedido ped ON prod.id_produto = ped.id_produto " +
+                "INNER JOIN Cliente c ON ped.id_cliente = c.id_cliente " +
+                "GROUP BY c.nome " +
+                "ORDER BY totalGasto DESC";
+
+
+
+
+        ResultSet rs = stmt.executeQuery(sql);
+
+        while (rs.next()) {
+            String nomeCliente = rs.getString("nomeCliente");
+
+            int totalGasto = rs.getInt("totalGasto");
+
+
+
+
+            System.out.printf("O Cliente : %s | Gastou em produtos : %s  \n",
+                    nomeCliente,totalGasto);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 }

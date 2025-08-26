@@ -1,9 +1,7 @@
 package com.Dorival.portfolio;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Date;
 import java.util.Scanner;
 
 public class Main {
@@ -48,7 +46,7 @@ public class Main {
                 System.out.println("\n=== PORTFÓLIO JAVA ===");
                 System.out.println("1 - Cliente com pedidos acima de 2 unidades1");
                 System.out.println("2 - Descobrir qual produto foi mais vendido! ");
-                System.out.println("3 - ");
+                System.out.println("3 - Descobrir quanto que cada cliente gastou");
                 System.out.println("4 - Sair");
                 System.out.print("Escolha uma opção: ");
 
@@ -66,6 +64,9 @@ public class Main {
                         break;
                     case 2:
                         Exercicio.executar2(conn);
+                        break;
+                    case 3:
+                        Exercicio.executar3(conn);
                         break;
                     case 4:
                         System.out.println("Saindo do portfólio...");
